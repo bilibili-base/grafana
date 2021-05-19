@@ -8,7 +8,7 @@ import {
   FieldType,
   MutableDataFrame,
 } from '@grafana/data';
-import { BackendSrvRequest, getBackendSrv } from '@grafana/runtime';
+import { BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import { serializeParams } from 'app/core/utils/fetch';
 import { getTimeSrv, TimeSrv } from 'app/features/dashboard/services/TimeSrv';
 import { Observable, of } from 'rxjs';
@@ -39,7 +39,8 @@ export class JaegerDatasource extends DataSourceApi<JaegerQuery> {
     }
 
     if (target.queryType !== 'search' && target.query) {
-      return this._request(`/api/traces/${encodeURIComponent(target.query)}`).pipe(
+      const traceID = getTemplateSrv().replace(target.query);
+      return this._request(`/api/traces/${encodeURIComponent(traceID)}`).pipe(
         map((response) => {
           const traceData = response?.data?.data?.[0];
           if (!traceData) {
