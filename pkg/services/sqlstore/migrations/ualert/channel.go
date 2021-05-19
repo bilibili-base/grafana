@@ -64,8 +64,18 @@ func (m *migration) getNotificationChannelMap() (map[interface{}]*notificationCh
 	}
 
 	if defaultChannel == nil {
-		// TODO: is this possible?
+		// Select the first one in the slice or any random
+		// email channel if it exists as the default.
 		defaultChannel = &allChannels[0]
+		if defaultChannel.Type != "email" {
+			// Give preference to email channel for default if any exists.
+			for _, c := range allChannelsMap {
+				if c.Type == "email" {
+					defaultChannel = c
+					break
+				}
+			}
+		}
 	}
 
 	return allChannelsMap, defaultChannel, nil
@@ -106,13 +116,9 @@ func (m *migration) makeReceiverAndRoute(ruleUid string, channelUids []interface
 	receiver.GrafanaManagedReceivers = portedChannels
 
 	n, v := getLabelForRouteMatching(ruleUid)
-	mat, err := labels.NewMatcher(labels.MatchEqual, n, v)
-	if err != nil {
-		return nil, nil, err
-	}
 	route := &Route{
 		Receiver: receiverName,
-		Matchers: Matchers{mat},
+		Match:    map[string]string{n: v},
 	}
 
 	return receiver, route, nil
@@ -261,9 +267,10 @@ type PostableApiAlertingConfig struct {
 }
 
 type Route struct {
-	Receiver string   `yaml:"receiver,omitempty" json:"receiver,omitempty"`
-	Matchers Matchers `yaml:"matchers,omitempty" json:"matchers,omitempty"`
-	Routes   []*Route `yaml:"routes,omitempty" json:"routes,omitempty"`
+	Receiver string `yaml:"receiver,omitempty" json:"receiver,omitempty"`
+	// Deprecated. Remove before v1.0 release of Prometheus Alertmanager.
+	Match  map[string]string `yaml:"match,omitempty" json:"match,omitempty"`
+	Routes []*Route          `yaml:"routes,omitempty" json:"routes,omitempty"`
 }
 
 type Matchers labels.Matchers
