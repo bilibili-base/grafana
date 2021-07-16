@@ -1028,7 +1028,7 @@ export class DashboardModel {
     let visibleHeight = viewHeight - navbarHeight - margin;
 
     // Remove submenu height if visible
-    if (this.meta.submenuEnabled && !kioskMode) {
+    if (this.meta.submenuEnabled) {
       visibleHeight -= submenuHeight;
     }
 

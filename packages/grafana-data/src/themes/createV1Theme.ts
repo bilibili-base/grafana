@@ -250,7 +250,7 @@ const commonColorsPalette = {
 
   // New blues palette used by next-gen form elements
   blue95: '#5794f2', // blue95
-  blue85: '#33a2e5', // blueText
+  blue85: '#40a9ff', // blueText#6E9FFF
   blue80: '#3274d9', // blue80
   blue77: '#1f60c4', // blue77
 

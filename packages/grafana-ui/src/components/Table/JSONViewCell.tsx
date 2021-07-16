@@ -17,19 +17,19 @@ export function JSONViewCell(props: TableCellProps): JSX.Element {
 
   let value = cell.value;
   let displayValue = value;
-
+  let tooltipValue = value;
   if (isString(value)) {
     try {
       value = JSON.parse(value);
+      tooltipValue = value['tooltip'];
+      displayValue = value['content'];
     } catch {} // ignore errors
   } else {
     displayValue = JSON.stringify(value);
   }
 
-  const content = <JSONTooltip value={value} />;
-
   return (
-    <Tooltip placement="auto-start" content={content} theme="info-alt">
+    <Tooltip placement="auto-start" content={tooltipValue} theme="info-alt">
       <div {...cellProps} className={tableStyles.cellContainer}>
         <div className={cx(tableStyles.cellText, txt)}>{displayValue}</div>
       </div>
